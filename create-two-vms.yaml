@@ -1,0 +1,68 @@
+- name: Ensure we have one Linux and one Windows VM
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+  - name: Ensure resource group exists
+    azure_rm_resourcegroup:
+        name: "{{ group }}"
+        location: westeurope
+
+  - name: Ensure virtual network exists
+    azure_rm_virtualnetwork:
+      resource_group: "{{ group }}"
+      name: mynet
+      address_prefixes: "10.10.0.0/16"
+
+  - name: Ensure subnet exists
+    azure_rm_subnet:
+      name: mysub
+      virtual_network_name: mynet
+      resource_group: "{{ group }}"
+      address_prefix_cidr: "10.10.1.0/24"
+
+  - name: Ensure Windows VM exists
+    azure_rm_virtualmachine:
+      resource_group: "{{ group }}"
+      name: mojeOkna
+      vm_size: Standard_A2
+      admin_username: tomas
+      admin_password: "Azure12345678"
+      os_type: Windows
+      image:
+        offer: WindowsServer
+        publisher: MicrosoftWindowsServer
+        sku: "2016-Datacenter"
+        version: latest
+      open_ports:
+        - 3389
+        - 5986
+        - 80
+    register: mojewindowsvm
+
+  - name: Ensure Linux VM exists
+    azure_rm_virtualmachine:
+      resource_group: ansibletest
+      name: mujLinux
+      vm_size: Standard_A0
+      admin_username: tomas
+      ssh_password_enabled: false
+      ssh_public_keys: 
+        - path: /home/tomas/.ssh/authorized_keys
+          key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFhm1FUhzt/9roX7SmT/dI+vkpyQVZp3Oo5HC23YkUVtpmTdHje5oBV0LMLBB1Q5oSNMCWiJpdfD4VxURC31yet4mQxX2DFYz8oEUh0Vpv+9YWwkEhyDy4AVmVKVoISo5rAsl3JLbcOkSqSO8FaEfO5KIIeJXB6yGI3UQOoL1owMR9STEnI2TGPZzvk/BdRE73gJxqqY0joyPSWOMAQ75Xr9ddWHul+v//hKjibFuQF9AFzaEwNbW5HxDsQj8gvdG/5d6mt66SfaY+UWkKldM4vRiZ1w11WlyxRJn5yZNTeOxIYU4WLrDtvlBklCMgB7oF0QfiqahauOEo6m5Di2Ex"
+      os_type: Linux
+      image:
+        offer: UbuntuServer
+        publisher: Canonical
+        sku: "14.04.4-LTS"
+        version: latest
+      open_ports:
+        - 22
+        - 80
+    register: mojelinuxvm
+
+  - name: Print Windows VM information
+    debug: msg="Access your Windows VM at {{ mojewindowsvm.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress}}"
+
+  - name: Print Linux VM information
+    debug: msg="Access your Linux VM at {{ mojelinuxvm.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress}}"

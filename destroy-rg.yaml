@@ -1,0 +1,11 @@
+- name: Destroy my lab
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+  - name: Ensure resource group does not exist
+    azure_rm_resourcegroup:
+      name: ansibletest
+      location: westeurope
+      state: absent
+      force: true
