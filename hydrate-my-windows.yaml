@@ -1,0 +1,18 @@
+- name: Make sure Windows web server is installer
+  hosts: ansiblegroup_webwindows
+  gather_facts: no
+  vars:
+    ansible_user: tomas
+    ansible_password: Azure12345678
+    ansible_port: 5986
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+    ansible_winrm_transport: plaintext
+  tasks:
+    - name: Make sure IIS is installed
+      win_feature:
+        name: "Web-Server"
+        state: present
+        restart: no
+        include_sub_features: yes
+        include_management_tools: no
