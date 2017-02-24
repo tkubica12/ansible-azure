@@ -38,11 +38,13 @@
         - 3389
         - 5986
         - 80
+      tags:
+        ansiblegroup: webwindows
     register: mojewindowsvm
 
   - name: Ensure Linux VM exists
     azure_rm_virtualmachine:
-      resource_group: ansibletest
+      resource_group: "{{ group }}"
       name: mujLinux
       vm_size: Standard_A0
       admin_username: tomas
@@ -59,6 +61,8 @@
       open_ports:
         - 22
         - 80
+      tags:
+        ansiblegroup: weblinux
     register: mojelinuxvm
 
   - name: Print Windows VM information
