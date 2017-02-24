@@ -1,0 +1,41 @@
+- name: Make sure apache is installed on correct system
+  hosts: ansiblegroup_apache
+  gather_facts: no
+  remote_user: tomas
+  become: true
+  tasks:
+    - name: Make sure Apache2 is installed
+      apt: name=apache2 update_cache=yes state=latest
+
+    - name: Enabled mod_rewrite
+      apache2_module: name=rewrite state=present
+      notify:
+        - Restart apache2
+
+    - name: Make sure Apache2 is started
+      service:
+        name: apache2
+        state: started
+
+  handlers:
+    - name: Restart apache2
+      service: 
+        name: apache2 
+        state: restarted
+
+
+- name: Make sure nginx is installed on correct system
+  hosts: ansiblegroup_nginx
+  gather_facts: no
+  remote_user: tomas
+  become: true
+  tasks:
+    - name: Make sure nginx is installed
+      apt: name=nginx update_cache=yes state=latest
+
+    - name: Make sure nginx is started
+      service:
+        name: nginx
+        state: started
+
+

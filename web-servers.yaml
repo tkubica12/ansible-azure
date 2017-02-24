@@ -1,0 +1,36 @@
+- name: Ensure we have one Linux server with tags apache and nginx
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    group: "{{ lookup('env', 'AZURE_RESOURCE_GROUPS') }}"
+    vms:
+      - name: mujApache1
+        tag: apache
+      - name: mujApache2
+        tag: apache
+      - name: mujNGINX
+        tag: nginx
+  tasks:
+  - name: Ensure resource group exists
+    azure_rm_resourcegroup:
+        name: "{{ group }}"
+        location: westeurope
+
+  - name: Ensure virtual network exists
+    azure_rm_virtualnetwork:
+      resource_group: "{{ group }}"
+      name: mynet
+      address_prefixes: "10.10.0.0/16"
+
+  - name: Ensure subnet exists
+    azure_rm_subnet:
+      name: mysub
+      virtual_network_name: mynet
+      resource_group: "{{ group }}"
+      address_prefix_cidr: "10.10.1.0/24"
+
+  - name: Ensure Linux VMs exists
+    include: web-server.yaml
+    with_items: "{{ vms }}"
+

@@ -2,10 +2,12 @@
   hosts: localhost
   connection: local
   gather_facts: False
+  vars:
+    group: "{{ lookup('env','AZURE_RESOURCE_GROUPS') }}"
   tasks:
   - name: Ensure resource group does not exist
     azure_rm_resourcegroup:
-      name: ansibletest
+      name: "{{ group }}"
       location: westeurope
       state: absent
       force: true
