@@ -3,7 +3,7 @@
   connection: local
   gather_facts: False
   vars:
-    group: "{{ lookup('env', 'AZURE_RESOURCE_GROUPS') }}"
+    group: "mytestgroup"
     vms:
       - name: mujApache1
         tag: apache
@@ -31,6 +31,8 @@
       address_prefix_cidr: "10.10.1.0/24"
 
   - name: Ensure Linux VMs exists
-    include: web-server.yaml
+    include: type-web-server.yaml
+      async: 1200
+      poll: 5
     with_items: "{{ vms }}"
 
