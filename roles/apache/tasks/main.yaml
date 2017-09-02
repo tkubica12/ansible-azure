@@ -1,0 +1,23 @@
+# - name: Make sure apache is installed on correct system
+#   hosts: apache
+#   gather_facts: no
+#   remote_user: tomas
+#   become: true
+  # tasks:
+- name: Make sure Apache2 is installed
+  apt: name=apache2 update_cache=yes state=latest
+
+- name: Enabled mod_rewrite
+  apache2_module: name=rewrite state=present
+  notify:
+    - Restart apache2
+
+- name: Make sure Apache2 is started
+  service:
+    name: apache2
+    state: started
+
+- name: Wait for web to become available
+  wait_for:
+    port: 80
+
