@@ -28,5 +28,6 @@ Example includes two roles - apache and nginx. Those are located in roles direct
 
 
 Tomas Kubica
+
 Find me on linkedin.com/in/tkubica
 
