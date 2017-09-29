@@ -12,7 +12,9 @@ Follow Internet documentation to install Ansible and Azure Python SDK. Make sure
 
 ## How to run
 
+```
 ansible-playbook main.yaml
+```
 
 ## Structure
 
